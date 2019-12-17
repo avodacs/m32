@@ -7,6 +7,7 @@ class M32Client {
     this.ip = ip;
     this.port = port;
     this.resolution = resolution;
+    this.intervals = [];
 
     if (this.port === undefined) {
       this.port = 10023;
@@ -30,6 +31,9 @@ class M32Client {
 
       try {
         if (address.endsWith('/mix/fader')) {
+          // Interrupt all timers except subscriptions
+          this.stopAllIntervals();
+
           // Collect Fader Position Value
           let splitAddress = address.split('/');
 
@@ -38,6 +42,9 @@ class M32Client {
 
           this.channels.setFader(channel, value);
         } else if (address.endsWith('/mix/on')) {
+          // Interrupt all timers except subscriptions
+          this.stopAllIntervals();
+
           // Collect Fader Mute
           let splitAddress = address.split('/');
 
@@ -60,6 +67,16 @@ class M32Client {
     });
 
     log.debug(`Created M32 Client at ${ip}:${port}`);
+  }
+
+  stopAllIntervals() {
+    log.warn('Stopping all existing intervals!');
+
+    while(this.intervals.length > 0) {
+      let thisInterval = this.intervals.shift();
+
+      clearInterval(thisInterval);
+    }
   }
 
   channelFix(channel) {
@@ -142,6 +159,8 @@ class M32Client {
         clearInterval(thisInterval);
       }
     }, this.resolution);
+
+    this.intervals.push(thisInterval);
   }
 
   muteChannel(channel) {
@@ -171,6 +190,11 @@ class M32Client {
   }
 
   graduallySetAllFaderValues(values, ms) {
+    log.debug('Setting all faders');
+
+    // Stop all pre-existing movements
+    this.stopAllIntervals();
+
     values.forEach(value => {
       this.graduallySetFaderValue(value.channel, value.faderValue, ms);
 
@@ -183,6 +207,9 @@ class M32Client {
   }
 
   setAllFaderValues(values) {
+    // Stop all pre-existing movements
+    this.stopAllIntervals();
+
     values.forEach(value => {
       this.setFaderValue(value.channel, value.faderValue);
 

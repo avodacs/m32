@@ -2,6 +2,11 @@
 
 This package allows for programmatic control of the M32 / X32 audio console.
 
+## Notes
+
+* If a fader or mute button is touched while graduallySetAllFaderValues is running, it will stop.
+* If graduallySetAllFaderValues is running and another one is started, the original one will stop.
+
 ## Example
 
 ```js
