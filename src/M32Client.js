@@ -20,6 +20,8 @@ class M32Client {
     this.channels = channelPersistence;
 
     this.udp = new osc.UDPPort({
+      localAddress: '0.0.0.0',
+      localPort: this.port,
       remoteAddress: this.ip,
       remotePort: this.port,
     });
