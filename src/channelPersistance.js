@@ -13,14 +13,14 @@ const get = channel => {
   if (channel === undefined) {
     return JSON.parse(JSON.stringify(channels));
   } else {
-    let thisChannel = channels.filter(x => x.channel === channel);
+    let thisChannel = channels.filter((x) => x.channel === channel);
 
     return JSON.parse(JSON.stringify(thisChannel[0]));
   }
 };
 
 const setMute = (channel, muted) => {
-  let thisChannel = channels.filter(x => x.channel === channel)[0];
+  let thisChannel = channels.filter((x) => x.channel === channel)[0];
 
   if (thisChannel !== null) {
     thisChannel.muted = muted;
@@ -28,7 +28,7 @@ const setMute = (channel, muted) => {
 };
 
 const setFader = (channel, value) => {
-  let thisChannel = channels.filter(x => x.channel === channel)[0];
+  let thisChannel = channels.filter((x) => x.channel === channel)[0];
 
   if (thisChannel !== null) {
     thisChannel.faderValue = value;
