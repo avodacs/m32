@@ -9,7 +9,11 @@ for (let i = 1; i <= 32; i++) {
   });
 }
 
-const get = channel => {
+const getAll = () => {
+  return JSON.parse(JSON.stringify(channels));
+};
+
+const get = (channel) => {
   if (channel === undefined) {
     return JSON.parse(JSON.stringify(channels));
   } else {
@@ -37,6 +41,7 @@ const setFader = (channel, value) => {
 
 module.exports = {
   get,
+  getAll,
   setMute,
   setFader,
 };
