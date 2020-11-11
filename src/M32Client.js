@@ -33,9 +33,6 @@ class M32Client {
 
       try {
         if (address.endsWith('/mix/fader')) {
-          // Interrupt all timers except subscriptions
-          this.stopAllIntervals();
-
           // Collect Fader Position Value
           let splitAddress = address.split('/');
 
@@ -44,9 +41,6 @@ class M32Client {
 
           this.channels.setFader(channel, value);
         } else if (address.endsWith('/mix/on')) {
-          // Interrupt all timers except subscriptions
-          this.stopAllIntervals();
-
           // Collect Fader Mute
           let splitAddress = address.split('/');
 
@@ -74,7 +68,7 @@ class M32Client {
   stopAllIntervals() {
     log.warn('Stopping all existing intervals!');
 
-    while(this.intervals.length > 0) {
+    while (this.intervals.length > 0) {
       let thisInterval = this.intervals.shift();
 
       clearInterval(thisInterval);
@@ -197,7 +191,7 @@ class M32Client {
     // Stop all pre-existing movements
     this.stopAllIntervals();
 
-    values.forEach(value => {
+    values.forEach((value) => {
       this.graduallySetFaderValue(value.channel, value.faderValue, ms);
 
       if (value.muted) {
@@ -212,7 +206,7 @@ class M32Client {
     // Stop all pre-existing movements
     this.stopAllIntervals();
 
-    values.forEach(value => {
+    values.forEach((value) => {
       this.setFaderValue(value.channel, value.faderValue);
 
       if (value.muted) {
