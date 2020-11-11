@@ -1,6 +1,6 @@
 {
   "name": "m32",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "M32 / X32 Controller",
   "main": "index.js",
   "repository": {
