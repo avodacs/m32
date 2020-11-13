@@ -26,6 +26,10 @@ class M32Client {
       remotePort: this.port,
     });
 
+    this.udp.on('error', function (error) {
+      log.error(`An error occurred: ${error.message}`);
+    });
+
     this.udp.on('message', (oscMsg, timeTag, info) => {
       log.debug(`OSC Message: ${JSON.stringify(oscMsg)}`);
 
