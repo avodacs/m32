@@ -8,8 +8,8 @@
     "url": "https://github.com/avodacs/m32"
   },
   "dependencies": {
-    "osc": "^2.4.1",
-    "sensible-logger": "^1.2.0"
+    "debug": "^4.2.0",
+    "osc": "^2.4.1"
   },
   "devDependencies": {},
   "scripts": {

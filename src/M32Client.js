@@ -1,13 +1,18 @@
 const channelPersistence = require('./channelPersistance');
-const log = require('sensible-logger');
+const debug = require('debug')('m32:M32Client');
 const osc = require('osc');
 
 class M32Client {
   constructor(ip, port, resolution) {
+    this.initialize(ip, port, resolution);
+  }
+
+  initialize(ip, port, resolution) {
     this.ip = ip;
     this.port = port;
     this.resolution = resolution;
     this.intervals = [];
+    this.subscriptionInterval = {};
 
     if (this.port === undefined) {
       this.port = 10023;
@@ -27,11 +32,11 @@ class M32Client {
     });
 
     this.udp.on('error', function (error) {
-      log.error(`An error occurred: ${error.message}`);
+      debug(`An error occurred: ${error.message}`);
     });
 
     this.udp.on('message', (oscMsg, timeTag, info) => {
-      log.debug(`OSC Message: ${JSON.stringify(oscMsg)}`);
+      debug(`OSC Message: ${JSON.stringify(oscMsg)}`);
 
       let address = oscMsg.address;
 
@@ -53,7 +58,7 @@ class M32Client {
 
           let isMuted = value === 0;
 
-          log.info(`Channel ${channel} is muted: ${isMuted}`);
+          debug(`Channel ${channel} is muted: ${isMuted}`);
 
           if (isMuted) {
             this.muteChannel(channel);
@@ -62,15 +67,15 @@ class M32Client {
           }
         }
       } catch (err) {
-        log.error(err);
+        debug(err);
       }
     });
 
-    log.debug(`Created M32 Client at ${ip}:${port}`);
+    debug(`Created M32 Client at ${ip}:${port}`);
   }
 
   stopAllIntervals() {
-    log.warn('Stopping all existing intervals!');
+    debug('Stopping all existing intervals!');
 
     while (this.intervals.length > 0) {
       let thisInterval = this.intervals.shift();
@@ -88,12 +93,17 @@ class M32Client {
   }
 
   connect() {
-    log.info(`Connecting to M32 at ${this.ip}`);
+    debug(`Connecting to M32 at ${this.ip}`);
     this.udp.open();
   }
 
+  disconnect() {
+    debug(`Disconnecting from M32 at ${this.ip}`);
+    this.udp.close();
+  }
+
   command(command, args) {
-    log.debug(`Sending ${JSON.stringify(args)} to ${command}`);
+    debug(`Sending ${JSON.stringify(args)} to ${command}`);
 
     return new Promise((resolve, reject) => {
       this.udp.send({
@@ -164,7 +174,7 @@ class M32Client {
   }
 
   muteChannel(channel) {
-    log.info(`Muting channel ${channel}`);
+    debug(`Muting channel ${channel}`);
 
     let fixedChannel = this.channelFix(channel);
 
@@ -174,7 +184,7 @@ class M32Client {
   }
 
   unmuteChannel(channel) {
-    log.info(`Unmuting channel ${channel}`);
+    debug(`Unmuting channel ${channel}`);
 
     let fixedChannel = this.channelFix(channel);
 
@@ -190,7 +200,7 @@ class M32Client {
   }
 
   graduallySetAllFaderValues(values, ms) {
-    log.debug('Setting all faders');
+    debug('Setting all faders');
 
     // Stop all pre-existing movements
     this.stopAllIntervals();
@@ -230,9 +240,13 @@ class M32Client {
     this.subscribe();
     this.getAllFaderValues();
 
-    setInterval(() => {
+    this.subscriptionInterval = setInterval(() => {
       this.subscribe();
     }, 7000);
+  }
+
+  stopSubscription() {
+    clearInterval(this.subscriptionInterval);
   }
 }
 
