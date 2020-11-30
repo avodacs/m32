@@ -67,11 +67,14 @@ class M32Client {
 
           debug(`Channel ${channel} is muted: ${isMuted}`);
 
-          if (isMuted) {
-            this.muteChannel(channel);
-          } else {
-            this.unmuteChannel(channel);
-          }
+          this.channels.setMute(channel, isMuted);
+        } else if(address.endsWith('/config/name')) {
+          let splitAddress = address.split('/');
+
+          let channel = parseInt(splitAddress[2]);
+          let value = oscMsg.args[0];
+
+          this.channels.setName(channel, value);
         }
       } catch (err) {
         debug(err);
@@ -128,6 +131,7 @@ class M32Client {
 
     this.command(`/ch/${fixedChannel}/mix/fader`);
     this.command(`/ch/${fixedChannel}/mix/on`);
+    this.command(`/ch/${fixedChannel}/config/name`);
   }
 
   setFaderValue(channel, value) {

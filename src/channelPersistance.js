@@ -4,6 +4,7 @@ let channels = [];
 for (let i = 1; i <= 32; i++) {
   channels.push({
     channel: i,
+    name: null,
     faderValue: null,
     muted: null,
   });
@@ -39,9 +40,18 @@ const setFader = (channel, value) => {
   }
 };
 
+const setName = (channel, name) => {
+  let thisChannel = channels.filter((x) => x.channel === channel)[0];
+
+  if (thisChannel !== null) {
+    thisChannel.name = name;
+  }
+}
+
 module.exports = {
   get,
   getAll,
   setMute,
+  setName,
   setFader,
 };
