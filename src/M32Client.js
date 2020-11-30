@@ -23,6 +23,7 @@ class M32Client {
     }
 
     this.channels = channelPersistence;
+    this.lastMessage = null;
 
     this.udp = new osc.UDPPort({
       localAddress: '0.0.0.0',
@@ -41,6 +42,12 @@ class M32Client {
       let address = oscMsg.address;
 
       try {
+        // Record the last message
+        this.lastMessage = {
+          message: oscMsg,
+          when: Math.floor(Date.now() / 1000),
+        };
+
         if (address.endsWith('/mix/fader')) {
           // Collect Fader Position Value
           let splitAddress = address.split('/');
@@ -234,6 +241,7 @@ class M32Client {
   // Subscribe
   subscribe() {
     this.command('/xremote');
+    this.command('/info');
   }
 
   startSubscription() {
